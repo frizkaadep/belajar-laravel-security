@@ -2,18 +2,19 @@
 
 namespace App\Providers;
 
-use App\Models\Contact;
 use App\Models\Todo;
 use App\Models\User;
+use App\Models\Contact;
 use App\Policies\TodoPolicy;
-use App\Providers\Guard\TokenGuard;
-use App\Providers\User\SimpleProvider;
-use Illuminate\Auth\Access\Response;
-use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use App\Policies\UserPolicy;
 use Illuminate\Http\Request;
+use App\Providers\Guard\TokenGuard;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Providers\User\SimpleProvider;
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         // Tambahkan model dan policy di sini
         // 'App\Models\NamaModel' => 'App\Policies\NamaPolicy',
+        User::class => UserPolicy::class,
         Todo::class => TodoPolicy::class,
     ];
 

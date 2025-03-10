@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
+use Tests\TestCase;
+use App\Models\Todo;
 use App\Models\User;
 use Database\Seeders\TodoSeeder;
 use Database\Seeders\UserSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TodoControllerTest extends TestCase
 {
@@ -22,5 +24,36 @@ class TodoControllerTest extends TestCase
         $this->actingAs($user)
             ->post("/api/todo")
             ->assertStatus(200);
+    }
+
+    public function testView()
+    {
+        $this->seed([UserSeeder::class, TodoSeeder::class]);
+
+        $user = User::where("email", "frizka@localhost")->firstOrFail();
+        Auth::login($user);
+
+        $todos = Todo::query()->get();
+
+        $this->view("todos", [
+            "todos" => $todos,
+        ])->assertSeeText("Edit")
+            ->assertSeeText("Delete")
+            ->assertDontSeeText("No Edit")
+            ->assertDontSeeText("No Delete");
+    }
+
+    public function testViewGuest()
+    {
+        $this->seed([UserSeeder::class, TodoSeeder::class]);
+
+        $user = User::where("email", "frizka@localhost")->firstOrFail();
+
+        $todos = Todo::query()->get();
+
+        $this->view("todos", [
+            "todos" => $todos,
+        ])->assertSeeText("No Edit")
+            ->assertSeeText("No Delete");
     }
 }
